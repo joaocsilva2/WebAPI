@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <h3>Lista Produtos</h3>
+        <ul id="ListaProdutos">
+        </ul>
+    </div>
+    <hr />
+    <div>
+        <h3>
+            Pesquisa Produto
+        </h3>
+        <label>Informe o Código do Produto</label>
+        <input type="text" id="txtCodigo" />
+        <br />
+        <input type="button" id="btnPesquisar" value="Pesquisar" onclick="Pesquisar()">
+        <span id="produto"></span>
+    </div>
+
+    <div>
+        <h3>
+            Inclui Produto
+        </h3>
+        <input type="button" id="btnPost" value="Post" onclick="Post()">
+        <span id="post"></span>
+    </div>
+
+    <div>
+        <h3>
+            Atualiza Produto
+        </h3>
+        <input type="button" id="btnPut" value="Put" onclick="Put()">
+        <span id="put"></span>
+    </div>
+
+    <div>
+        <h3>
+            Excluir Produto
+        </h3>
+        <input type="button" id="btnDelete" value="Delete" onclick="Delete()">
+        <span id="delete"></span>
+    </div>
+
+    <script src="Scripts/jquery-3.4.1.min.js"></script>
+
+    <script>
+        var uri = "/api/v1/produto";
+
+        $(document).ready(function () {
+            $.getJSON(uri)
+                .done(function (data) {
+                    console.log(data);
+                    $.each(data, function (key, item) {
+                        $("<li>", { text: item.Codigo + " " + item.Nome + " = " + item.Valor }).appendTo($("#ListaProdutos"));
+                    });
+                });
+        });
+
+        function Pesquisar() {
+            var codigo = $("#txtCodigo").val();
+            $.getJSON(uri + "?codigo=" + codigo)
+                .done(function (data) {
+                    console.log(data);
+                    $("#produto").text("Codigo: " + data.Codigo + " Nome: " + data.Nome + " Valor: " + data.Valor);
+                });
+        };
+
+        function Post() {
+            var produto = { Codigo: 5, Nome: "Nootebok Dell", Categoria: "Nootebooks", Valor: 2500.99 };
+            $.ajax({
+                type: "POST",
+                url: uri,
+                data: JSON.stringify(produto),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#post").text("Produto Cadastrado com sucesso.")
+                }
+            });
+        };
+
+        function Put() {
+            var produto = { Codigo: 5, Nome: "Nootebok Dell 123", Categoria: "Nootebooks 123", Valor: 2600.99 };
+            $.ajax({
+                type: "PUT",
+                url: uri,
+                data: JSON.stringify(produto),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#put").text("Produto Cadastrado/Atualizado com sucesso.")
+                }
+            });
+        };
+
+        function Delete() {
+            var codigo = $("#txtCodigo").val();
+            $.ajax({
+                type: "DELETE",
+                url: uri + "?codigo=" + codigo,
+                success: function (data) {
+                    $("#delete").text("Produto Excluído com sucesso.")
+                }
+            });
+
+        };
+    </script>
+</body>
+</html>
